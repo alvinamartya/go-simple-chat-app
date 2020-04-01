@@ -1,0 +1,8 @@
+version: "3.7"
+
+services:
+  golang:
+    container_name: run-go-chat-app
+    image: go-chat-app
+    ports:
+      - 8080:8080
