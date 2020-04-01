@@ -1,0 +1,59 @@
+<body>
+    <ul id="ul">
+
+    </ul>
+        <input type="text" id="in"/>
+        <button onclick="sendMessage()">Send</button>
+<script>
+    let name = prompt('Enter your name:') || "User"
+
+    let socket = new WebSocket("ws://localhost:8080/ws?username="+name)
+    console.log("Attempting Websocket Connection")
+
+    function sendMessage(){
+        let value = document.getElementById("in").value
+        socket.send(JSON.stringify({
+            Message:value
+        }))
+
+        let message = '<b>me</b>: ' + value
+        print(message)
+    }
+
+    socket.onopen = () => {
+        console.log("Successfully connected")
+        print("me connected")
+    }
+
+    socket.onclose = (event) => {
+        let message = '<b>me</b>: disconnected'
+        print(message)
+    }
+
+    socket.onmessage = (msg) => {
+        let res = JSON.parse(msg.data)
+
+        let message = ''
+        if (res.Type === 'New User') {
+            message = '<b>' + res.From + '</b>: connected'
+        } else if (res.Type === 'Leave') {
+            message = '<b>' + res.From + '</b>: disconnected'
+        } else {
+            message = '<b>' + res.From + '</b>: ' + res.Message
+        }
+
+        print(message)
+    }
+
+    socket.onerror = (err) => {
+        console.log(err)
+    }
+
+    function print(message){
+        let ul = document.getElementById("ul")
+        let li = document.createElement("li")
+        li.innerHTML = message
+        ul.append(li)
+    }
+</script>
+</body>
